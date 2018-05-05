@@ -33,10 +33,10 @@
                 android:layout_height="match_parent"
                 android:id="@+id/stripGridView"
 
-                android:columnWidth="90dp"
+                android:columnWidth="@dimen/stripWidth"
                 android:numColumns="auto_fit"
-                android:verticalSpacing="10dp"
-                android:horizontalSpacing="10dp"
+                android:verticalSpacing="@dimen/stripVSpace"
+                android:horizontalSpacing="@dimen/stripHSpace"
                 android:stretchMode="columnWidth"
                 android:gravity="center"
         />

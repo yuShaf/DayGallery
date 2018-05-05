@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="stripWidth">25mm</dimen>
+    <dimen name="stripHeight">14mm</dimen>
+    <dimen name="stripVSpace">1mm</dimen>
+    <dimen name="stripHSpace">1mm</dimen>
+</resources>

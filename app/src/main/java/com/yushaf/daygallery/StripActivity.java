@@ -12,8 +12,6 @@ import android.view.View;
 import android.widget.*;
 import android.support.v7.widget.Toolbar;
 
-import java.util.ArrayList;
-
 public class StripActivity extends AppCompatActivity
         implements UrlLoadTask.User {
 
@@ -153,7 +151,7 @@ public class StripActivity extends AppCompatActivity
     }
 
     private void initStrip() {
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        adapter = new StripAdapter(this, android.R.layout.simple_list_item_1);
         GridView view = findViewById(R.id.stripGridView);
         view.setAdapter(adapter);
         view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
