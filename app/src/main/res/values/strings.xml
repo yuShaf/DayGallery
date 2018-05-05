@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Day Gallery</string>
+    <string name="apiFotki">http://api-fotki.yandex.ru/api/podhistory/</string>
+    <string name="apiFotkiTag">content</string>
+    <string name="apiFotkiAttribute">src</string>
+    <string name="stateLoad">Loading...</string>
+    <string name="stateShow">Loading completed.</string>
+    <string name="stateFail">Loading failed.</string>
+    <string name="internetOff">No connection.</string>
+    <string name="refreshMenu">Refresh</string>
+</resources>
