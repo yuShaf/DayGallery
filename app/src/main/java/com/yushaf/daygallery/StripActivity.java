@@ -1,6 +1,7 @@
 package com.yushaf.daygallery;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -60,6 +61,7 @@ public class StripActivity extends AppCompatActivity
     // Ключи для хранения данных в Bundle.
     private static final String stateKey = "STATE";
     private static final String urlKey = "URLS";
+    private static final String intentUrlKey = "URL";
 
     private State state;
     private UrlLoadTask loadTask; // Загрузчик ссылок.
@@ -157,7 +159,10 @@ public class StripActivity extends AppCompatActivity
         view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+                String url = adapter.getItem(i);
+                Intent intent = new Intent(StripActivity.this, ImageActivity.class);
+                intent.putExtra(getString(R.string.intentDataKey), url);
+                StripActivity.this.startActivity(intent);
             }
         });
     }
