@@ -120,9 +120,10 @@ public class StripActivity extends AppCompatActivity
             loadTask.execute();
 
         } else {
-            state = State.Fail;
             setRefreshing(false);
             toast(getString(R.string.internetOff));
+            if (state == State.Load)
+                state = State.Fail;
         }
     }
 
