@@ -2,6 +2,7 @@ package com.yushaf.daygallery;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import org.w3c.dom.Text;
 
 /**
@@ -19,6 +21,15 @@ import org.w3c.dom.Text;
  * status bar and navigation/system bar) with user interaction.
  */
 public class ImageActivity extends AppCompatActivity {
+
+    /*
+
+    Activity для вывода одного изображения в полноэкранном режиме.
+    taskAffinity и launchMode (singleInstance) настроены для использования нового окна.
+
+     */
+
+    // Стандартный код шаблона полноэкранного режима.
 
     /**
      * Some older devices needs a small delay between UI widget updates
@@ -78,6 +89,7 @@ public class ImageActivity extends AppCompatActivity {
             }
         });
 
+        // Попытка восстановления из bundle и - при неудаче - разбор intent.
         if (!restore(savedInstanceState))
             handleIntent(getIntent());
     }
@@ -131,18 +143,18 @@ public class ImageActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    //
+    // Добавленный код.
 
-    private static final String imageKey = "ImageKey";
-    private String url;
+    private static final String imageKey = "ImageKey"; // Ключ для bundle.
+    private String url; // Адрес отображаемого изображения.
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(imageKey, url);
+        outState.putString(imageKey, url); // Сохранение адреса изображения.
     }
 
-    private boolean restore(Bundle bundle) {
+    private boolean restore(Bundle bundle) { // Попытка восстановления состояния.
         boolean ok = false;
         if (bundle != null) {
             String url = bundle.getString(imageKey);
@@ -154,7 +166,7 @@ public class ImageActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
+    protected void onNewIntent(Intent intent) { // Обработка новых intent (так как activity в единственном экземпляре).
         super.onNewIntent(intent);
         handleIntent(intent);
     }
@@ -162,10 +174,11 @@ public class ImageActivity extends AppCompatActivity {
     private void handleIntent(Intent intent) {
         if (intent != null) {
             showImage(intent.getStringExtra(getString(R.string.intentDataKey)));
+            setIntent(intent); // Не удалось установить сохраняется ли Intent, но на всякий случай...
         }
     }
 
-    private void showImage(String url) {
+    private void showImage(String url) { // Сохранение адреса и вывод изображения.
         this.url = url;
         ImageView image = findViewById(R.id.image);
         Glide
