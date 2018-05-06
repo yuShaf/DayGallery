@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import org.w3c.dom.Text;
 
@@ -77,15 +78,8 @@ public class ImageActivity extends AppCompatActivity {
             }
         });
 
-        Intent intent = getIntent();
-        if (intent != null) {
-            String url = intent.getStringExtra(getString(R.string.intentDataKey));
-            ImageView image = findViewById(R.id.image);
-            Glide
-                    .with(this)
-                    .load(url)
-                    .into(image);
-        }
+        if (!restore(savedInstanceState))
+            handleIntent(getIntent());
     }
 
     @Override
@@ -136,4 +130,48 @@ public class ImageActivity extends AppCompatActivity {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
+
+    //
+
+    private static final String imageKey = "ImageKey";
+    private String url;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(imageKey, url);
+    }
+
+    private boolean restore(Bundle bundle) {
+        boolean ok = false;
+        if (bundle != null) {
+            String url = bundle.getString(imageKey);
+            ok = url != null;
+            if (ok)
+                showImage(url);
+        }
+        return ok;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (intent != null) {
+            showImage(intent.getStringExtra(getString(R.string.intentDataKey)));
+        }
+    }
+
+    private void showImage(String url) {
+        this.url = url;
+        ImageView image = findViewById(R.id.image);
+        Glide
+                .with(this)
+                .load(url)
+                .into(image);
+    }
+
 }

@@ -1,16 +1,19 @@
 <resources>
     <string name="app_name">Day Gallery</string>
+    <string name="singleImageName">Day Image</string>
+    <string name="singleImageTaskAffinity">com.yushaf.daygallery.single</string>
+
     <string name="apiFotki">http://api-fotki.yandex.ru/api/podhistory/</string>
     <string name="apiFotkiTag">content</string>
     <string name="apiFotkiAttribute">src</string>
+
     <string name="stateLoad">Loading...</string>
     <string name="stateShow">Loading completed.</string>
     <string name="stateFail">Loading failed.</string>
-    <string name="internetOff">No connection.</string>
-    <string name="refreshMenu">Refresh</string>
-    <string name="intentDataKey">DATAKEY</string>
 
-    <string name="title_activity_image">ImageActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="internetOff">No connection.</string>
+
+    <string name="refreshMenu">Refresh</string>
+
+    <string name="intentDataKey">DATAKEY</string>
 </resources>

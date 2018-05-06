@@ -30,7 +30,9 @@
                 android:name=".ImageActivity"
                 android:exported="false"
                 android:configChanges="orientation|keyboardHidden|screenSize"
-                android:label="@string/title_activity_image"
+                android:label="@string/singleImageName"
+                android:taskAffinity="@string/singleImageTaskAffinity"
+                android:launchMode="singleInstance"
                 android:theme="@style/FullscreenTheme">
         </activity>
     </application>
