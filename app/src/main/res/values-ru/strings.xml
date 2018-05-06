@@ -7,13 +7,13 @@
     <string name="apiFotkiTag">content</string>
     <string name="apiFotkiAttribute">src</string>
 
-    <string name="stateLoad">Loading list...</string>
-    <string name="stateShow">List loaded.</string>
-    <string name="stateFail">Loading failed.</string>
+    <string name="stateLoad">Загрузка списка...</string>
+    <string name="stateShow">Список загружен.</string>
+    <string name="stateFail">Не получилось.</string>
 
-    <string name="internetOff">No connection.</string>
+    <string name="internetOff">Нет соединения.</string>
 
-    <string name="refreshMenu">Refresh</string>
+    <string name="refreshMenu">Обновить</string>
 
     <string name="intentDataKey">DATAKEY</string>
 </resources>

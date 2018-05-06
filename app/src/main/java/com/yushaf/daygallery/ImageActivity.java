@@ -12,7 +12,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.bumptech.glide.GenericTransitionOptions;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.TransitionOptions;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import org.w3c.dom.Text;
 
@@ -184,6 +189,7 @@ public class ImageActivity extends AppCompatActivity {
         Glide
                 .with(this)
                 .load(url)
+                .transition(DrawableTransitionOptions.withCrossFade())
                 .into(image);
     }
 
