@@ -31,7 +31,7 @@
                 android:exported="false"
                 android:configChanges="keyboardHidden"
                 android:label="@string/singleImageName"
-                android:taskAffinity="@string/singleImageTaskAffinity"
+                android:taskAffinity="com.yushaf.daygallery.single"
                 android:launchMode="singleInstance"
                 android:theme="@style/FullscreenTheme">
         </activity>

@@ -12,48 +12,65 @@ import java.lang.ref.WeakReference;
 public class UrlLoadTask extends
         AsyncTask< // Самый простой вариант для загрузки xml со списком картинок.
                 Void,
-                String, // URL возвращаются как прогресс, чтобы сразу использовать.
+                ImageKit, // URL возвращаются как прогресс, чтобы сразу использовать.
                 Exception // Возникшее исключение возвращается как результат.
                 > {
 
     public interface User { // Интерфейс пользователя загрузчика для ухода от зависимостей.
-        void handleUrl(String... urls); // Метод обработки прогресса - найденных адресов.
+        void handleUrl(ImageKit... urls); // Метод обработки прогресса - найденных адресов.
         void handleException(Exception exception); // Метод обработки завершения.
         String getUrl(); // Адрес для загрузки XML.
-        String getTag();
-        String getAttribute();
     }
 
+    // Используемые фрагменты XML.
+    private static final String imageTag = "entry", sizeTag = "f:img",
+            sizeWidth = "width", sizeHeight = "height", sizeUrl = "href";
+
     private final WeakReference<User> userRef; // Слабая ссылка на случай уничтожения пользователя.
-    private final String url, tag, attribute;
+    private final String url;
 
     // Используется SAX в попытке меньше держать в памяти.
     private final DefaultHandler entryHandler = new DefaultHandler() { // Объект для SAX разбора.
+
+        private boolean insideEntry = false;
+        private ImageKit kit;
+
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes)
                 throws SAXException {
             super.startElement(uri, localName, qName, attributes);
-            handleElement(qName, attributes);
+            checkCancel();
+            if (qName.equals(imageTag)) {
+                insideEntry = true;
+                kit = new ImageKit();
+            }
+            else if (insideEntry && qName.equals(sizeTag)) {
+                int width = Integer.parseInt(attributes.getValue(sizeWidth));
+                int height = Integer.parseInt(attributes.getValue(sizeHeight));
+                String url = attributes.getValue(sizeUrl);
+                kit.add(width, height, url);
+            }
         }
-    };
 
-    private void handleElement(String qName, Attributes attributes) // Метод для разбора XML.
-            throws SAXException {
-        if (qName.equals(tag)) { // Оригинальное изображение.
-            String url = attributes.getValue(attribute); // Ссылка изображения.
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            super.endElement(uri, localName, qName);
+            checkCancel();
+            if (qName.equals(imageTag))
+                publishProgress(kit);
+        }
+
+        private void checkCancel() throws SAXException {
             if (isCancelled() || userRef.get() == null)
                 // Остановка разбора через исключение при отмене задания или уничтожении пользователя.
                 throw new SAXException();
-            else
-                publishProgress(url); // Передача ссылки в UI поток.
         }
-    }
+
+    };
 
     public UrlLoadTask(User user) {
         userRef = new WeakReference<>(user);
         url = user.getUrl();
-        tag = user.getTag();
-        attribute = user.getAttribute();
     }
 
     @Override
@@ -70,7 +87,7 @@ public class UrlLoadTask extends
     }
 
     @Override
-    protected void onProgressUpdate(String... values) { // Передача адресов.
+    protected void onProgressUpdate(ImageKit... values) { // Передача адресов.
         super.onProgressUpdate(values);
         User user = userRef.get();
         if (user != null)

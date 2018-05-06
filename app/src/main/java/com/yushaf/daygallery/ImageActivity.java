@@ -2,24 +2,20 @@ package com.yushaf.daygallery;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MotionEvent;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
-import com.bumptech.glide.GenericTransitionOptions;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.TransitionOptions;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
-import org.w3c.dom.Text;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -151,21 +147,21 @@ public class ImageActivity extends AppCompatActivity {
     // Добавленный код.
 
     private static final String imageKey = "ImageKey"; // Ключ для bundle.
-    private String url; // Адрес отображаемого изображения.
+    private ImageKit imageKit; // Изображение.
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(imageKey, url); // Сохранение адреса изображения.
+        outState.putSerializable(imageKey, imageKit); // Сохранение изображения.
     }
 
     private boolean restore(Bundle bundle) { // Попытка восстановления состояния.
         boolean ok = false;
         if (bundle != null) {
-            String url = bundle.getString(imageKey);
-            ok = url != null;
+            ImageKit kit = (ImageKit) bundle.getSerializable(imageKey);
+            ok = kit != null;
             if (ok)
-                showImage(url);
+                showImage(kit);
         }
         return ok;
     }
@@ -178,17 +174,36 @@ public class ImageActivity extends AppCompatActivity {
 
     private void handleIntent(Intent intent) {
         if (intent != null) {
-            showImage(intent.getStringExtra(getString(R.string.intentDataKey)));
+            ImageKit kit = (ImageKit) intent.getSerializableExtra(getString(R.string.intentDataKey));
+            showImage(kit);
             setIntent(intent); // Не удалось установить сохраняется ли Intent, но на всякий случай...
         }
     }
 
-    private void showImage(String url) { // Сохранение адреса и вывод изображения.
-        this.url = url;
+    private void showImage(ImageKit kit) { // Сохранение адреса и вывод изображения.
+        imageKit = kit;
+
+        // Выбор варианта изображения.
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        String url = kit.getBigger(metrics.widthPixels, metrics.heightPixels);
+
         ImageView image = findViewById(R.id.image);
-        Glide
-                .with(this)
-                .load(url)
+        RequestManager manager = Glide.with(this);
+        RequestBuilder<Drawable> builder;
+        if (url != null) {
+            RequestOptions options = new RequestOptions()
+                    .placeholder(R.drawable.ic_crop_white_24dp)
+                    .error(R.drawable.ic_error_white_24dp);
+            builder = manager
+                    .load(url)
+                    .apply(options);
+        } else {
+            builder = manager
+                    .load(R.drawable.ic_error_white_24dp);
+            Toast.makeText(this, getString(R.string.emptyData), Toast.LENGTH_LONG).show();
+        }
+        builder
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(image);
     }

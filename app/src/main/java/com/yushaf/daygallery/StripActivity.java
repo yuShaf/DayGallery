@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,9 +60,8 @@ public class StripActivity extends AppCompatActivity
     };
 
     // Ключи для хранения данных в Bundle.
-    private static final String stateKey = "STATE";
-    private static final String urlKey = "URLS";
-    private static final String intentUrlKey = "URL";
+    private static final String stateKey = "StateKey";
+    private static final String imagesKey = "ImagesKey";
 
     private State state;
     private UrlLoadTask loadTask; // Загрузчик ссылок.
@@ -72,10 +72,10 @@ public class StripActivity extends AppCompatActivity
             case Load:
                 break;
             case Show:
-                String[] urls = new String[adapter.getCount()];
-                for (int i = 0; i < urls.length; i++)
-                    urls[i] = adapter.getItem(i);
-                bundle.putSerializable(urlKey, urls); // Сохранение ссылок.
+                ImageKit[] kits = new ImageKit[adapter.getCount()];
+                for (int i = 0; i < kits.length; i++)
+                    kits[i] = adapter.getItem(i);
+                bundle.putSerializable(imagesKey, kits); // Сохранение ссылок.
                 break;
             case Fail:
                 break;
@@ -96,18 +96,20 @@ public class StripActivity extends AppCompatActivity
                 // Возможно, при Fail не стоит этого делать.
                 break;
             case Show: // Восстановление ссылок.
-                String[] urls = (String[]) bundle.getSerializable(urlKey);
-                handleUrl(urls);
+                ImageKit[] kits = (ImageKit[]) bundle.getSerializable(imagesKey);
+                handleUrl(kits);
                 break;
         }
     }
 
     private void startLoad() {
+
         // Проверка соединения.
         ConnectivityManager cm =
                 (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
         if (isConnected) {
             // UI
             adapter.clear();
@@ -136,7 +138,7 @@ public class StripActivity extends AppCompatActivity
 
     // UI.
 
-    private ArrayAdapter<String> adapter;
+    private ArrayAdapter<ImageKit> adapter;
 
     private void initSwipeRefresh() {
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeLayout);
@@ -154,15 +156,17 @@ public class StripActivity extends AppCompatActivity
     }
 
     private void initStrip() {
-        adapter = new StripAdapter(this, android.R.layout.simple_list_item_1);
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        adapter = new StripAdapter(this, android.R.layout.simple_list_item_1, metrics);
         GridView view = findViewById(R.id.stripGridView);
         view.setAdapter(adapter);
         view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String url = adapter.getItem(i);
+                ImageKit imageKit = adapter.getItem(i);
                 Intent intent = new Intent(StripActivity.this, ImageActivity.class);
-                intent.putExtra(getString(R.string.intentDataKey), url);
+                intent.putExtra(getString(R.string.intentDataKey), imageKit);
                 StripActivity.this.startActivity(intent);
             }
         });
@@ -174,7 +178,7 @@ public class StripActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_refresh, menu); //
+        getMenuInflater().inflate(R.menu.menu_refresh, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -197,8 +201,8 @@ public class StripActivity extends AppCompatActivity
     // Реализация интерфейса для загрузчика.
 
     @Override
-    public void handleUrl(String... urls) {
-        adapter.addAll(urls);
+    public void handleUrl(ImageKit... imageKits) {
+        adapter.addAll(imageKits);
     }
 
     @Override
@@ -217,16 +221,6 @@ public class StripActivity extends AppCompatActivity
     @Override
     public String getUrl() {
         return getString(R.string.apiFotki);
-    }
-
-    @Override
-    public String getTag() {
-        return getString(R.string.apiFotkiTag);
-    }
-
-    @Override
-    public String getAttribute() {
-        return getString(R.string.apiFotkiAttribute);
     }
 
 }
